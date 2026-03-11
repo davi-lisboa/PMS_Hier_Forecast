@@ -1,0 +1,19 @@
+# Processamento de Dados
+pandas<3.0
+numpy
+openpyxl
+
+# Modelagem e Séries Temporais
+sktime
+statsforecast
+scikit-learn
+lightgbm
+catboost
+
+# APIs e Dados Externos
+sidrapy
+
+# Utilidades e Visualização
+joblib
+matplotlib
+seaborn
