@@ -1,0 +1,78 @@
+name: PMS Forecast Pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Roda todo dia 11, 12 e 13 às 12:00 UTC (09:00 BRT).
+    - cron: '0 12 11,12,13 * *'
+
+permissions:
+  contents: write  # necessário para commit/push
+
+concurrency:
+  group: pms-forecast-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    # Proteção extra para evitar loops de execução
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # necessário para push funcionar bem
+          # lfs: true      # (opcional) ative se passar a usar Git LFS futuramente
+          # token: ${{ secrets.GITHUB_TOKEN }}  # padrão já é usado; deixe explícito se quiser
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          check-latest: true
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pipeline
+        run: |
+          python run_pipeline.py
+
+      - name: Configure git author (se necessário)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # ---- Commit apenas do bundle (com flexibilidade para incluir outros futuramente) ----
+      - name: Commit updated model files (if changed)
+        run: |
+          set -e
+          # Arquivos a rastrear agora (apenas o bundle):
+          git add pms_forecast_bundle.joblib || true
+
+          # (Opcional) Para adicionar mais arquivos no futuro, descomente e ajuste:
+          # git add reports/** || true
+          # git add resultados/** || true
+          # git add '*.csv' || true
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma mudança detectada nos arquivos rastreados."
+          else
+            git commit -m "chore(pipeline): atualiza artefatos (inclui pms_forecast_bundle.joblib) [skip ci]"
+            git push
+          fi
+
+      # ---- (Opcional) Timeout — mantenho comentado por ora (20 minutos) ----
+      # timeout-minutes: 20
