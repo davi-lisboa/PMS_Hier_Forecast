@@ -8,7 +8,6 @@ sktime
 statsforecast
 scikit-learn
 lightgbm
-catboost
 
 # APIs e Dados Externos
 sidrapy
