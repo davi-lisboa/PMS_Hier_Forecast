@@ -197,6 +197,54 @@ def agregar_pms(pond_pms):
 
   return pms_agg
 
+def prepare_pms_data(pms_raw: pd.DataFrame, pesos_raw: pd.DataFrame) -> pd.DataFrame:
+    """
+    Encapsula o pipeline sequencial de tratamento bruto para o input do Sktime.
+    (1) Ordering (2) Ponderacao (3) Agregacao Hierarquica OLS.
+    """
+    pms_ordered = order_levels(
+        df= pms_raw.reset_index(), 
+        hier_col_name= 'atividade',
+        date_col= 'data', 
+        keep_cols= ['nindice']
+    ).dropna()
+
+    pms_pond = ponderar_pms(pms_ordered, pesos_raw)
+    pms_agg = agregar_pms(pms_pond)
+    return pms_agg
+
 # %%
+def transform_to_yoy(df: pd.DataFrame, col_name: str = 'indice_pond') -> pd.DataFrame:
+    """Aplica a transformação Ano a Ano (YoY) na série histórica respeitando a hierarquia."""
+    df_yoy = (
+        df.groupby(level=['Setor', 'Divisão', 'Grupo'])[[col_name]]
+        .pct_change(12).multiply(100)
+    )
+    return df_yoy
+
+
+def format_output_table(df: pd.DataFrame, name: bool = True, dates: bool = True) -> pd.DataFrame:
+    """
+    Formata um DataFrame retornado das projeções.
+    Se name=True, formata '__total' para '0. PMS Total'.
+    Se dates=True, formata as datas para string '%b/%y'.
+    """
+    temp = df.copy()
+    
+    if dates:
+        temp = temp.reset_index()
+        temp['data'] = temp['data'].dt.strftime('%b/%y')
+        temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
+    
+    if name:
+        temp = temp.reset_index()
+        temp['Setor'] = temp['Setor'].map(lambda x: np.nan if x == '__total' else x)
+        # Preenche possiveis NaNs nos agrupamentos pais e renomeia o Total
+        temp = temp.ffill(axis=1).fillna('0. PMS Total')
+        temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
+        
+    temp = temp.unstack(level='data')
+    return temp
+
 if __name__ == '__main__':
-    main()
+    main()
