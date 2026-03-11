@@ -85,6 +85,12 @@ temp/
 ~$*
 
 # =========================
+# Arquivos específicos
+# =========================
+ondemand_fc.py
+
+
+# =========================
 # Dados/outputs (opcionais)
 # Descomente se quiser ignorar saídas do pipeline.
 # =========================
