@@ -99,3 +99,28 @@ def report_annual_tables(new_full_df: pd.DataFrame):
     print(" CRESCIMENTO ACUMULADO 12 MESES ")
     print("------------------------------")
     print(df_12m.fillna('-'))
+
+
+def report_forecast_diff(old_full_df, old_preds, new_full_df, new_preds, transformation='yoy'):
+
+    from tratamento import transform_to_yoy, format_output_table
+
+    if transformation in ['yoy', 'YoY', 'a/a', 'A/A']:
+        old = transform_to_yoy(old_full_df)
+        new = transform_to_yoy(new_full_df)
+
+    old_n_new = pd.merge(old, new, left_index=True, right_index=True, how='inner')
+    old_n_new.columns = ['Projeção Anterior', 'Nova Projeção']
+
+    old_n_new = old_n_new.query(
+                    "data in @new_preds.index.get_level_values('data').unique()"
+                                )
+
+    old_n_new['Diff'] = old_n_new['Nova Projeção'] - old_n_new['Projeção Anterior']
+    
+    old_n_new.dropna(inplace=True)
+
+    old_n_new = format_output_table(old_n_new, name=True, dates=True, transpose=False)
+
+    return old_n_new
+

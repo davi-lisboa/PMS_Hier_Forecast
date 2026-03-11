@@ -9,7 +9,7 @@ import warnings
 from coleta import get_pms_index, get_pesos
 from tratamento import prepare_pms_data
 from modelo import load_bundle, save_bundle, create_model
-from reports import report_forecast_error, report_short_term_growth, report_annual_tables
+from reports import report_forecast_error, report_forecast_diff, report_short_term_growth, report_annual_tables
 
 warnings.filterwarnings('ignore')
 
@@ -73,11 +73,14 @@ print("\n6 - Crescimento A/A (%) da Projecao (Proximos 3 meses):")
 new_full_df = pd.concat([pms_agg, preds]).sort_index()
 
 preds_dates_short = preds.index.get_level_values('data').unique()[:3]
-report_short_term_growth(new_full_df, preds_dates_short)
+# report_short_term_growth(new_full_df, preds_dates_short)
+report_forecast_diff(previous_full_df, last_preds, new_full_df, preds, 'yoy') \
+    .round(1) \
+    .groupby(level=['Setor', 'Divisão', 'Grupo']).head(6)
 
 # %% 7 - Gera visualizacoes a/a e crescimento anual APENAS VIA TABELA
-print("\n7 - Extracao das Tabelas de Variacao A/A e 12M...")
-report_annual_tables(new_full_df)
+# print("\n7 - Extracao das Tabelas de Variacao A/A e 12M...")
+# report_annual_tables(new_full_df)
 
 print("\n*** Pipeline de Forecasting Concluido. ***\n")
 

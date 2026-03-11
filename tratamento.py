@@ -223,7 +223,11 @@ def transform_to_yoy(df: pd.DataFrame, col_name: str = 'indice_pond') -> pd.Data
     return df_yoy
 
 
-def format_output_table(df: pd.DataFrame, name: bool = True, dates: bool = True) -> pd.DataFrame:
+def format_output_table(
+        df: pd.DataFrame, 
+        name: bool = True, 
+        dates: bool = True, 
+        transpose: bool = True) -> pd.DataFrame:
     """
     Formata um DataFrame retornado das projeções.
     Se name=True, formata '__total' para '0. PMS Total'.
@@ -231,19 +235,22 @@ def format_output_table(df: pd.DataFrame, name: bool = True, dates: bool = True)
     """
     temp = df.copy()
     
-    if dates:
-        temp = temp.reset_index()
-        temp['data'] = temp['data'].dt.strftime('%b/%y')
-        temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
-    
     if name:
         temp = temp.reset_index()
         temp[['Setor', 'Divisão', 'Grupo']] = temp[['Setor', 'Divisão', 'Grupo']].map(lambda x: np.nan if x == '__total' else x)
         # Preenche possiveis NaNs nos agrupamentos pais e renomeia o Total
         temp = temp.ffill(axis=1).fillna('0. PMS Total')
         temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
-        
-    temp = temp.unstack(level='data')
+        temp = temp.sort_index()
+    
+    if dates:
+        temp = temp.reset_index()
+        temp['data'] = temp['data'].dt.strftime('%b/%y')
+        temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
+    
+    if transpose:
+        temp = temp.unstack(level='data')
+    
     return temp
 
 if __name__ == '__main__':
