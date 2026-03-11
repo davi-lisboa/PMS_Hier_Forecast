@@ -1,0 +1,108 @@
+# =========================
+# Python – caches & bytecode
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# =========================
+# Build / distribuição
+# =========================
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# =========================
+# Caches de ferramentas
+# =========================
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pyre/
+.cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# =========================
+# Ambientes virtuais
+# =========================
+.venv/
+venv/
+env/
+ENV/
+.conda/
+.poetry/
+.pdm-build/
+
+# =========================
+# Configs locais / credenciais
+# =========================
+.env
+.env.*
+*.env
+*.secret
+*.secrets
+secrets.json
+
+# =========================
+# IDEs / Editores
+# =========================
+.vscode/
+.idea/
+*.code-workspace
+
+# =========================
+# SO / arquivo de sistema
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Agentes (a sua pasta)
+# =========================
+.agents/
+
+# =========================
+# Arquivos do Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Logs & temporários genéricos
+# =========================
+*.log
+*.tmp
+tmp/
+temp/
+~$*
+
+# =========================
+# Dados/outputs (opcionais)
+# Descomente se quiser ignorar saídas do pipeline.
+# =========================
+# reports/
+# resultados/
+# output/
+# data/
+# data/raw/
+# data/processed/
+# *.csv
+# *.parquet
+# *.xlsx
+
+# =========================
+# Model artifacts (decisão sua)
+# Você quer manter o bundle versionado. Portanto:
+#   - NÃO ignore pms_forecast_bundle.joblib
+#   - Se quiser ignorar outros .joblib, use o bloco abaixo:
+# =========================
+# *.joblib
+# !pms_forecast_bundle.joblib
