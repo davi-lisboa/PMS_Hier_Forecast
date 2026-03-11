@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Roda todo dia 11, 12 e 13 às 12:00 UTC (09:00 BRT).
-    - cron: '0 12 11,12,13 * *'
+    - cron: '15 12 11,12,13 * *'
 
 permissions:
   contents: write  # necessário para commit/push
