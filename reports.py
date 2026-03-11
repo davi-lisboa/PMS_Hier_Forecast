@@ -26,7 +26,20 @@ def report_forecast_error(pms_agg: pd.DataFrame, previous_full_df: pd.DataFrame,
     diff['Erro'] = diff['Previsto'] - diff['Realizado']
 
     # Formata nome e datas
-    df_err = format_output_table(diff, name=True, dates=True)
+    df_err = format_output_table(diff, name=True, dates=False) \
+            .reorder_levels(order=[1,0], axis=1) \
+            .sort_index(axis=1)
+    
+    ordem_lvl2 = ["Previsto", "Realizado", "Erro"]
+    df_err = df_err.reindex(columns=pd.MultiIndex.from_product(
+                                [
+                                    df_err.columns.levels[0], # mantém a ordem original das datas (nível 0)
+                                    ordem_lvl2                # nova ordem do nível 1
+                                ]
+                                                            )
+                            )
+    df_err.columns = pd.MultiIndex.from_tuples([(d.strftime('%b/%y'), t) for d,t in df_err.columns])
+    
     return df_err
 
 def report_short_term_growth(new_full_df: pd.DataFrame, preds_dates_short: pd.DatetimeIndex):

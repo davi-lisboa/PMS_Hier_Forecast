@@ -238,7 +238,7 @@ def format_output_table(df: pd.DataFrame, name: bool = True, dates: bool = True)
     
     if name:
         temp = temp.reset_index()
-        temp['Setor'] = temp['Setor'].map(lambda x: np.nan if x == '__total' else x)
+        temp[['Setor', 'Divisão', 'Grupo']] = temp[['Setor', 'Divisão', 'Grupo']].map(lambda x: np.nan if x == '__total' else x)
         # Preenche possiveis NaNs nos agrupamentos pais e renomeia o Total
         temp = temp.ffill(axis=1).fillna('0. PMS Total')
         temp = temp.set_index(['Setor', 'Divisão', 'Grupo', 'data'])
@@ -247,4 +247,4 @@ def format_output_table(df: pd.DataFrame, name: bool = True, dates: bool = True)
     return temp
 
 if __name__ == '__main__':
-    main()
+    main()
