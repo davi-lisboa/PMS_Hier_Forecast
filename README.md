@@ -21,7 +21,7 @@ pip install -r requirements.txt
 
 2. Execute o orquestrador na raiz do projeto:
 ```bash
-python run.py
+python run_pipeline.py
 ```
 
 
