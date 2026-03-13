@@ -47,7 +47,7 @@ if bundle is not None and previous_full_df is not None:
     print("\n3 - Diferenca (A/A) do ultimo valor em relacao ao q foi projetado pelo modelo antigo:")
     err_df = report_forecast_error(pms_agg, previous_full_df, last_date)
     if not err_df.empty:
-        display(err_df.round(2).fillna('-'))
+        print(err_df.round(2).fillna('-'))
     else:
         print("    Nenhum novo dado para comparar o projetado x realizado.")
 
@@ -83,5 +83,3 @@ report_forecast_diff(previous_full_df, last_preds, new_full_df, preds, 'yoy') \
 # report_annual_tables(new_full_df)
 
 print("\n*** Pipeline de Forecasting Concluido. ***\n")
-
-# %%
